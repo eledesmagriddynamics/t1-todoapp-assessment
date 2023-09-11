@@ -33,7 +33,7 @@ const getTodos = async (req, res, next) => {
 
 const addTodo = async (req, res, next) => {
     console.log('➕ addTodo');
-
+    console.log('req.body: ', req.body);
     try {
         const newId = Math.round(Math.random() * 10000);
         const newTodo = req.body.todo;
