@@ -1,5 +1,10 @@
 const fs = require('fs/promises');
 
+const errors = {
+    emptyValues: 'Empty values not accepted',
+    wrongRequest: 'Wrong body request'
+};
+
 const readTodos = async () => {
     console.log('readTodos');
     try {
@@ -37,6 +42,15 @@ const addTodo = async (req, res, next) => {
     try {
         const newId = Math.round(Math.random() * 10000);
         const newTodo = req.body.todo;
+
+        if (newTodo === '') {
+            return res.status(400).json({ data: errors.emptyValues });
+        }
+
+        if (newTodo === undefined) {
+            return res.status(400).json({ message: errors.wrongRequest, data: req.body });
+        }
+
         const todo = {
             id: newId,
             todo: newTodo,
@@ -64,15 +78,27 @@ const editTodo = async (req, res, next) => {
         let updateTodo;
 
         if (typeof req.body.todo !== 'undefined') {
+            const newTodo = req.body.todo;
+
+            if (newTodo === '') {
+                return res.status(400).json({ data: errors.emptyValues });
+            }
+
             updateTodo = {
-                todo: req.body.todo,
+                todo: newTodo,
             };
         } else if (typeof req.body.isDone !== 'undefined') {
+            const newIsDone = req.body.isDone;
+
+            if (newIsDone === '') {
+                return res.status(400).json({ data: errors.emptyValues });
+            }
+
             updateTodo = {
-                isDone: req.body.isDone,
+                isDone: newIsDone,
             };
         } else {
-            updateTodo = {};
+            return res.status(400).json({ message: errors.wrongRequest, data: req.body });
         }
         
         let todos = await readTodos();
