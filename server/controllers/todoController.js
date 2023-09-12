@@ -29,7 +29,7 @@ const getTodos = async (req, res, next) => {
     try {
         const data = await readTodos();
 
-        return res.json({ data });
+        return res.json({ success: true, message: 'Todos retrieved successfully ', data });
     } catch (error) {
         console.error('Error getTodos', error);
         throw new Error('Error getTodos', error);
@@ -44,11 +44,11 @@ const addTodo = async (req, res, next) => {
         const newTodo = req.body.todo;
 
         if (newTodo === '') {
-            return res.status(400).json({ data: errors.emptyValues });
+            return res.status(400).json({ success: false, message: errors.emptyValues });
         }
 
         if (newTodo === undefined) {
-            return res.status(400).json({ message: errors.wrongRequest, data: req.body });
+            return res.status(400).json({ success: false, message: errors.wrongRequest, data: req.body });
         }
 
         const todo = {
@@ -61,9 +61,7 @@ const addTodo = async (req, res, next) => {
 
         await fs.writeFile('./data/todos.json', JSON.stringify(data));
 
-        data = await readTodos();
-
-        return res.json({ data });
+        return res.json({ success: true, message: 'Todo added successfully' });
     } catch (error) {
         console.error('Error addTodo', error);
         throw new Error('Error addTodo', error);
@@ -81,7 +79,7 @@ const editTodo = async (req, res, next) => {
             const newTodo = req.body.todo;
 
             if (newTodo === '') {
-                return res.status(400).json({ data: errors.emptyValues });
+                return res.status(400).json({ success: false, message: errors.emptyValues });
             }
 
             updateTodo = {
@@ -91,14 +89,14 @@ const editTodo = async (req, res, next) => {
             const newIsDone = req.body.isDone;
 
             if (newIsDone === '') {
-                return res.status(400).json({ data: errors.emptyValues });
+                return res.status(400).json({ success: false, message: errors.emptyValues });
             }
 
             updateTodo = {
                 isDone: newIsDone,
             };
         } else {
-            return res.status(400).json({ message: errors.wrongRequest, data: req.body });
+            return res.status(400).json({ success: false, message: errors.wrongRequest, data: req.body });
         }
         
         let todos = await readTodos();
@@ -119,11 +117,9 @@ const editTodo = async (req, res, next) => {
 
             await fs.writeFile('./data/todos.json', JSON.stringify(todos));
 
-            todos = await readTodos();
-
-            return res.json({ todos });
+            return res.json({ success: true, message: 'Todo edited successfully' });
         } else {
-            return res.json({ data: 'No todos' });
+            return res.json({ success: false, message: 'No todos', data: todos });
         }
     } catch (error) {
         console.error('Error addTodo', error);
@@ -147,9 +143,9 @@ const deleteTodo = async (req, res, next) => {
 
             todos = await readTodos();
 
-            return res.json({ todos });
+            return res.json({ success: true, message: 'Todo deleted' });
         } else {
-            return res.json({ data: 'No todos' });
+            return res.json({success: false, message: 'No todos', data: todos });
         }
     } catch (error) {
         console.error('Error addTodo', error);
